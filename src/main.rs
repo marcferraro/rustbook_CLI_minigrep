@@ -22,6 +22,9 @@ struct Config {
 impl Config {
     fn new(args: &[String]) -> Config {
         // In future refactor, consider consuming args here, unlikely to resuse
+        if args.len() < 3 {
+            panic!("not enough arguments");
+        }
         Config {
             query: args[1].clone(),
             file_path: args[2].clone(),
