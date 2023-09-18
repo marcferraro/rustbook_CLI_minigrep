@@ -7,20 +7,33 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn build(args: &[String]) -> Result<Config, &'static str> {
+    pub fn build(mut args: impl Iterator<Item = String>,) -> Result<Config, &'static str> {
         // In future refactor, consider consuming args here, unlikely to resuse
         // or find a way to not use clone()
-        if args.len() < 3 {
-            return Err("not enough arguments")
-        }
+        // if args.len() < 3 {
+        //     return Err("not enough arguments")
+        // }
 
-        let ignore_case = args.contains(&"ignore_case".to_string()) || 
-            env::var("IGNORE_CASE").is_ok();
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a query string"),
+        };
+
+        let file_path = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a file path"),
+        };
+
+        let ignore_case = match args.next() {
+            Some(arg) => arg == "ignore_case".to_string(),
+            None => false,
+            // .contains(&"ignore_case".to_string()) || 
+        } || env::var("IGNORE_CASE").is_ok();
         
         Ok(
             Config {
-                query: args[1].clone(),
-                file_path: args[2].clone(),
+                query,
+                file_path,
                 ignore_case,
             }
         )
